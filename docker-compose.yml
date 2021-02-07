@@ -1,0 +1,22 @@
+version: '2'
+
+networks:
+  app-tier:
+    driver: bridge
+
+services:
+  fluent-bit:
+    image: 'fluent/fluent-bit:1.6.10-debug'
+    volumes:
+      - ./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    networks:
+      - app-tier
+  myapp:
+    image: 'go-demo-app:1.0.0'
+    environment:
+      LOG_COLLECTOR_HOST: fluent-bit
+      LOG_COLLECTOR_PORT: 5170
+    ports:
+      - "8080:8080"
+    networks:
+      - app-tier
